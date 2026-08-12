@@ -38,6 +38,7 @@ Optional: set GITHUB_TOKEN in the environment for higher rate limits and private
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import re
@@ -397,7 +398,7 @@ def _clean_summary_fragment(raw: str) -> str:
     m = _strip_conventional_subject(raw)
     m = _strip_jira_meta_prefixes(m)
     m = _strip_jira_tickets(m)
-    return m
+    return html.escape(m)
 
 
 def _truncate_words(s: str, max_len: int = 140) -> str:
@@ -698,7 +699,7 @@ def render_markdown(results: list[RepoResult], title_tag: str | None = None) -> 
         lines.append(f"## [{name}]({url})")
         lines.append("")
         if rr.error:
-            lines.append(f"_Error: {rr.error}_")
+            lines.append(f"_Error: {html.escape(rr.error)}_")
             lines.append("")
             continue
         if rr.agent_v2_submodule:
@@ -728,7 +729,7 @@ def render_markdown(results: list[RepoResult], title_tag: str | None = None) -> 
             lines.append("### Commits")
             lines.append("")
             for cm in rr.commits:
-                lines.append(f"- `{cm['sha']}` {cm['message']}")
+                lines.append(f"- `{cm['sha']}` {html.escape(cm['message'])}")
             lines.append("")
         else:
             lines.append("_No commits in range (or compare empty)._")
